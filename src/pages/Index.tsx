@@ -3,9 +3,11 @@ import { useState } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ResearchResponse } from "@/components/ResearchResponse";
 import { ResearchService } from "@/services/ResearchService";
-import { Loader2, Lightbulb, Stethoscope, Globe } from "lucide-react";
+import { Loader2, Lightbulb, Stethoscope, Globe, LogIn, User, History } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { Link } from "react-router-dom";
 
 export interface Article {
   id: string;
@@ -30,6 +32,7 @@ const Index = () => {
   const [researchResult, setResearchResult] = useState<ResearchResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
+  const { user, logout } = useAuth();
 
   const handleSearch = async (searchQuery: string) => {
     if (!searchQuery.trim()) {
@@ -70,12 +73,49 @@ const Index = () => {
       {!hasSearched ? (
         // Landing page design
         <div className="min-h-screen flex flex-col items-center justify-center px-4">
+          {/* Top Navigation */}
+          <div className="absolute top-4 right-4 flex gap-2">
+            {user ? (
+              <>
+                <Link to="/history">
+                  <Button variant="outline" size="sm">
+                    <History className="w-4 h-4 mr-2" />
+                    History
+                  </Button>
+                </Link>
+                <Link to="/profile">
+                  <Button variant="outline" size="sm">
+                    <User className="w-4 h-4 mr-2" />
+                    Profile
+                  </Button>
+                </Link>
+                <Button variant="outline" size="sm" onClick={logout}>
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button variant="outline" size="sm">
+                    <LogIn className="w-4 h-4 mr-2" />
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/signup">
+                  <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                    Sign Up
+                  </Button>
+                </Link>
+              </>
+            )}
+          </div>
+
           <div className="w-full max-w-4xl mx-auto text-center space-y-8">
             {/* Logo */}
             <div className="mb-12">
               <h1 className="text-5xl md:text-6xl font-normal text-foreground tracking-tight">
                 AfroEvidence
-                <span className="inline-block w-3 h-3 bg-orange-500 rounded-full ml-2 mb-2"></span>
+                <span className="inline-block w-3 h-3 bg-green-500 rounded-full ml-2 mb-2"></span>
               </h1>
             </div>
 
@@ -132,14 +172,32 @@ const Index = () => {
               <div className="flex items-center gap-4">
                 <h1 className="text-2xl font-semibold text-foreground">
                   AfroEvidence
-                  <span className="inline-block w-2 h-2 bg-orange-500 rounded-full ml-1 mb-1"></span>
+                  <span className="inline-block w-2 h-2 bg-green-500 rounded-full ml-1 mb-1"></span>
                 </h1>
                 <div className="flex-1 max-w-2xl">
                   <SearchBar onSearch={handleSearch} isLoading={isLoading} isLanding={false} />
                 </div>
                 <div className="flex gap-2">
-                  <Button variant="outline">Share</Button>
-                  <Button className="bg-orange-500 hover:bg-orange-600">New Question</Button>
+                  {user ? (
+                    <>
+                      <Link to="/history">
+                        <Button variant="outline" size="sm">
+                          <History className="w-4 h-4 mr-2" />
+                          History
+                        </Button>
+                      </Link>
+                      <Link to="/profile">
+                        <Button variant="outline" size="sm">
+                          <User className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                    </>
+                  ) : (
+                    <Link to="/login">
+                      <Button variant="outline" size="sm">Login</Button>
+                    </Link>
+                  )}
+                  <Button className="bg-green-600 hover:bg-green-700">New Question</Button>
                 </div>
               </div>
             </div>

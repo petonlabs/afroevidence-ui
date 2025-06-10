@@ -1,4 +1,5 @@
 import { Article, ResearchResult } from "@/pages/Index";
+import { SearchHistoryService } from "./SearchHistoryService";
 
 export class ResearchService {
   private static readonly OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
@@ -59,8 +60,12 @@ export class ResearchService {
 
     try {
       // For now, return mock data since the API key will be configured in your backend
-      // Replace this with actual API call when backend is ready
-      return this.getMockResearchResult(query);
+      const result = this.getMockResearchResult(query);
+      
+      // Save to search history
+      SearchHistoryService.saveSearch(query, result);
+      
+      return result;
       
     } catch (error) {
       console.error("Error searching research:", error);
