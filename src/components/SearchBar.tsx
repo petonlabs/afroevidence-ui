@@ -2,73 +2,74 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Settings } from "lucide-react";
-import { ApiKeyDialog } from "@/components/ApiKeyDialog";
+import { Search, ArrowRight } from "lucide-react";
 
 interface SearchBarProps {
   onSearch: (query: string) => void;
   isLoading: boolean;
+  isLanding?: boolean;
 }
 
-export const SearchBar = ({ onSearch, isLoading }: SearchBarProps) => {
+export const SearchBar = ({ onSearch, isLoading, isLanding = false }: SearchBarProps) => {
   const [query, setQuery] = useState("");
-  const [showApiDialog, setShowApiDialog] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSearch(query);
+    if (query.trim()) {
+      onSearch(query);
+    }
   };
 
-  const hasApiKey = localStorage.getItem("openai_api_key");
-
-  return (
-    <div className="w-full max-w-4xl mx-auto space-y-4">
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+  if (isLanding) {
+    return (
+      <form onSubmit={handleSubmit} className="relative">
+        <div className="relative">
+          <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+            <div className="w-6 h-6 border-2 border-orange-500 rounded-full flex items-center justify-center">
+              <Search className="w-3 h-3 text-orange-500" />
+            </div>
+          </div>
           <Input
             type="text"
-            placeholder="Search for research papers, studies, or topics (e.g., 'COVID-19 vaccine effectiveness', 'machine learning in healthcare')"
+            placeholder="Ask a medical question..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="pl-10 h-12 text-base"
+            className="h-16 pl-16 pr-16 text-lg rounded-full border-2 border-orange-200 focus:border-orange-500 focus-visible:ring-orange-500"
             disabled={isLoading}
           />
+          <Button 
+            type="submit" 
+            disabled={isLoading || !query.trim()}
+            size="icon"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-12 w-12 rounded-full bg-orange-500 hover:bg-orange-600"
+          >
+            <ArrowRight className="w-5 h-5" />
+          </Button>
         </div>
-        <Button 
-          type="submit" 
-          disabled={isLoading || !query.trim() || !hasApiKey}
-          size="lg"
-          className="px-8"
-        >
-          {isLoading ? "Searching..." : "Search"}
-        </Button>
       </form>
+    );
+  }
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          {hasApiKey ? (
-            <span className="text-green-600">✓ API Key configured</span>
-          ) : (
-            <span className="text-amber-600">⚠ API Key required</span>
-          )}
-        </div>
-        
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setShowApiDialog(true)}
-          className="gap-2"
-        >
-          <Settings className="h-4 w-4" />
-          {hasApiKey ? "Update API Key" : "Set API Key"}
-        </Button>
+  return (
+    <form onSubmit={handleSubmit} className="flex gap-2">
+      <div className="flex-1 relative">
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+        <Input
+          type="text"
+          placeholder="Search African research..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="pl-10 h-10"
+          disabled={isLoading}
+        />
       </div>
-
-      <ApiKeyDialog 
-        open={showApiDialog} 
-        onOpenChange={setShowApiDialog} 
-      />
-    </div>
+      <Button 
+        type="submit" 
+        disabled={isLoading || !query.trim()}
+        className="bg-orange-500 hover:bg-orange-600"
+      >
+        {isLoading ? "Searching..." : "Search"}
+      </Button>
+    </form>
   );
 };
