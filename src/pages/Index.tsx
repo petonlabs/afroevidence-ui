@@ -1,7 +1,7 @@
 
 import { useState } from "react";
 import { SearchBar } from "@/components/SearchBar";
-import { ArticleCard } from "@/components/ArticleCard";
+import { ResearchResponse } from "@/components/ResearchResponse";
 import { ResearchService } from "@/services/ResearchService";
 import { Loader2, Lightbulb, Stethoscope, Globe } from "lucide-react";
 import { toast } from "sonner";
@@ -19,10 +19,16 @@ export interface Article {
   keyFindings: string[];
 }
 
+export interface ResearchResult {
+  query: string;
+  explanation: string;
+  articles: Article[];
+  followUpQuestions: string[];
+}
+
 const Index = () => {
-  const [articles, setArticles] = useState<Article[]>([]);
+  const [researchResult, setResearchResult] = useState<ResearchResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [query, setQuery] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
 
   const handleSearch = async (searchQuery: string) => {
@@ -32,21 +38,20 @@ const Index = () => {
     }
 
     setIsLoading(true);
-    setQuery(searchQuery);
     setHasSearched(true);
     
     try {
-      const results = await ResearchService.searchArticles(searchQuery);
-      setArticles(results);
+      const result = await ResearchService.searchResearch(searchQuery);
+      setResearchResult(result);
       
-      if (results.length === 0) {
-        toast.info("No articles found for your query");
+      if (result.articles.length === 0) {
+        toast.info("No African research found for your query");
       } else {
-        toast.success(`Found ${results.length} relevant articles`);
+        toast.success(`Found comprehensive African research on "${searchQuery}"`);
       }
     } catch (error) {
       console.error("Search error:", error);
-      toast.error("Failed to search articles. Please try again.");
+      toast.error("Failed to search research. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -56,10 +61,14 @@ const Index = () => {
     handleSearch(action);
   };
 
+  const handleFollowUpQuestion = (question: string) => {
+    handleSearch(question);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {!hasSearched ? (
-        // Landing page design matching OpenEvidence
+        // Landing page design
         <div className="min-h-screen flex flex-col items-center justify-center px-4">
           <div className="w-full max-w-4xl mx-auto text-center space-y-8">
             {/* Logo */}
@@ -80,7 +89,7 @@ const Index = () => {
               <Button
                 variant="outline"
                 className="h-12 px-6 rounded-full border-2 hover:bg-accent"
-                onClick={() => handleQuickAction("Ask for a Quick Fact about African medicine")}
+                onClick={() => handleQuickAction("Quick facts about traditional African medicine")}
               >
                 <Lightbulb className="w-4 h-4 mr-2" />
                 Ask for a Quick Fact
@@ -89,7 +98,7 @@ const Index = () => {
               <Button
                 variant="outline"
                 className="h-12 px-6 rounded-full border-2 hover:bg-accent"
-                onClick={() => handleQuickAction("Ask about Treatment Alternatives in African traditional medicine")}
+                onClick={() => handleQuickAction("Treatment alternatives in African traditional medicine")}
               >
                 <Stethoscope className="w-4 h-4 mr-2" />
                 Ask about Treatment Alternatives
@@ -98,7 +107,7 @@ const Index = () => {
               <Button
                 variant="outline"
                 className="h-12 px-6 rounded-full border-2 hover:bg-accent"
-                onClick={() => handleQuickAction("Ask about African research in local languages")}
+                onClick={() => handleQuickAction("African research in local languages")}
               >
                 <Globe className="w-4 h-4 mr-2" />
                 Ask about Local Research
@@ -128,12 +137,16 @@ const Index = () => {
                 <div className="flex-1 max-w-2xl">
                   <SearchBar onSearch={handleSearch} isLoading={isLoading} isLanding={false} />
                 </div>
+                <div className="flex gap-2">
+                  <Button variant="outline">Share</Button>
+                  <Button className="bg-orange-500 hover:bg-orange-600">New Question</Button>
+                </div>
               </div>
             </div>
           </header>
 
           {/* Main Content */}
-          <main className="container mx-auto px-4 py-8">
+          <main className="container mx-auto px-4 py-8 max-w-4xl">
             {isLoading && (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-8 w-8 animate-spin mr-2" />
@@ -141,30 +154,18 @@ const Index = () => {
               </div>
             )}
 
-            {!isLoading && query && articles.length === 0 && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground text-lg">
-                  No African research articles found for "{query}". Try a different search term.
-                </p>
-              </div>
+            {!isLoading && researchResult && (
+              <ResearchResponse 
+                result={researchResult} 
+                onFollowUpQuestion={handleFollowUpQuestion}
+              />
             )}
 
-            {!isLoading && articles.length > 0 && (
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-semibold">
-                    African Research Results for "{query}"
-                  </h2>
-                  <span className="text-muted-foreground">
-                    {articles.length} articles found
-                  </span>
-                </div>
-                
-                <div className="grid gap-6">
-                  {articles.map((article) => (
-                    <ArticleCard key={article.id} article={article} />
-                  ))}
-                </div>
+            {!isLoading && hasSearched && !researchResult && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground text-lg">
+                  No African research found. Try a different search term.
+                </p>
               </div>
             )}
           </main>

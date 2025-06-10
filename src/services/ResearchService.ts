@@ -1,5 +1,4 @@
-
-import { Article } from "@/pages/Index";
+import { Article, ResearchResult } from "@/pages/Index";
 
 export class ResearchService {
   private static readonly OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
@@ -7,159 +6,135 @@ export class ResearchService {
   // This will be replaced with your backend API key
   private static readonly API_KEY = "your-api-key-here";
 
-  static async searchArticles(query: string): Promise<Article[]> {
+  static async searchResearch(query: string): Promise<ResearchResult> {
     const prompt = `You are a research assistant specializing in African medical and scientific research. 
     
     Search query: "${query}"
     
-    Please provide 5-7 relevant scientific articles from African research institutions, African journals, or studies conducted in Africa related to this query. Focus on:
+    Please provide:
+    1. A comprehensive explanation (2-3 paragraphs) synthesizing African research on this topic
+    2. 3-5 relevant African research articles with citations
+    3. 3-4 follow-up questions related to the topic
+    
+    Focus on:
     - Research from African universities and institutions
     - Studies on African populations
     - Traditional African medicine research
     - Public health research from African countries
     - Clinical studies conducted in Africa
     
-    For each article, provide:
-    - A realistic title
-    - African authors or researchers (2-5 realistic names)
-    - African journal name or international journal with African research
-    - Publication year (2015-2024)
-    - A comprehensive summary (2-3 sentences)
-    - 2-4 key findings relevant to African context
-    - A relevance score (0.0-1.0)
-    - DOI (optional, but realistic format)
-
-    Respond with a JSON array of articles. Make sure the articles are scientifically plausible and relevant to African medical/scientific research.
+    For the explanation, write in a scholarly but accessible tone, citing research findings and providing context specific to African healthcare and research.
     
-    Example format:
-    [
-      {
-        "id": "unique-id",
-        "title": "Article Title",
-        "authors": ["Dr. Amina Kone", "Prof. Kwame Asante"],
-        "journal": "African Journal of Medicine",
-        "year": 2023,
-        "summary": "Brief summary of the African research study...",
-        "keyFindings": ["Finding 1", "Finding 2"],
-        "relevanceScore": 0.95,
-        "doi": "10.1000/ajm.2023.123456"
-      }
-    ]`;
+    For each article, provide realistic:
+    - Title relevant to African research
+    - African authors/researchers (2-4 names)
+    - African journal or international journal with African research
+    - Publication year (2018-2024)
+    - DOI in realistic format
+    
+    For follow-up questions, suggest clinically relevant questions that would naturally arise from the topic.
+
+    Respond with a JSON object in this exact format:
+    {
+      "explanation": "Comprehensive explanation text...",
+      "articles": [
+        {
+          "id": "unique-id",
+          "title": "Article Title",
+          "authors": ["Dr. Name", "Prof. Name"],
+          "journal": "Journal Name",
+          "year": 2023,
+          "summary": "Brief summary",
+          "keyFindings": ["Finding 1", "Finding 2"],
+          "relevanceScore": 0.95,
+          "doi": "10.1000/journal.2023.123456"
+        }
+      ],
+      "followUpQuestions": [
+        "Question 1?",
+        "Question 2?",
+        "Question 3?"
+      ]
+    }`;
 
     try {
       // For now, return mock data since the API key will be configured in your backend
       // Replace this with actual API call when backend is ready
-      return this.getMockAfricanResearch(query);
+      return this.getMockResearchResult(query);
       
-      /* Uncomment when backend API key is configured:
-      const response = await fetch(this.OPENAI_API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${this.API_KEY}`,
-        },
-        body: JSON.stringify({
-          model: "gpt-4",
-          messages: [
-            {
-              role: "system",
-              content: "You are a helpful research assistant that provides accurate, well-formatted JSON responses about African scientific literature."
-            },
-            {
-              role: "user",
-              content: prompt
-            }
-          ],
-          temperature: 0.7,
-          max_tokens: 2000,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`API request failed: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      const content = data.choices[0]?.message?.content;
-
-      if (!content) {
-        throw new Error("No response content received from OpenAI API");
-      }
-
-      const jsonMatch = content.match(/\[[\s\S]*\]/);
-      if (!jsonMatch) {
-        throw new Error("Could not parse JSON response from API");
-      }
-
-      const articles = JSON.parse(jsonMatch[0]);
-      
-      return articles.map((article: any, index: number) => ({
-        id: article.id || `article-${Date.now()}-${index}`,
-        title: article.title || "Untitled Article",
-        authors: Array.isArray(article.authors) ? article.authors : ["Unknown Author"],
-        journal: article.journal || "Unknown Journal",
-        year: article.year || new Date().getFullYear(),
-        summary: article.summary || "No summary available",
-        keyFindings: Array.isArray(article.keyFindings) ? article.keyFindings : [],
-        relevanceScore: article.relevanceScore || 0.5,
-        doi: article.doi || undefined,
-      }));
-      */
-
     } catch (error) {
-      console.error("Error searching articles:", error);
+      console.error("Error searching research:", error);
       throw error;
     }
   }
 
-  private static getMockAfricanResearch(query: string): Article[] {
-    // Mock data for demonstration - remove when backend is ready
-    return [
-      {
-        id: "african-malaria-2024",
-        title: "Novel Antimalarial Compounds from West African Traditional Medicine",
-        authors: ["Dr. Fatima Diallo", "Prof. Kwame Osei", "Dr. Aisha Mwangi"],
-        journal: "African Journal of Traditional Medicine",
-        year: 2024,
-        summary: "This study investigates the antimalarial properties of traditional medicinal plants used in Senegal and Ghana, identifying three novel compounds with significant activity against Plasmodium falciparum.",
-        keyFindings: [
-          "Compound A showed 85% efficacy against chloroquine-resistant malaria",
-          "Traditional healers' knowledge contributed to 92% of successful identifications",
-          "No significant side effects observed in Phase I trials"
-        ],
-        relevanceScore: 0.94,
-        doi: "10.1000/ajtm.2024.001"
-      },
-      {
-        id: "tb-africa-2023",
-        title: "Community-Based Tuberculosis Treatment Outcomes in Rural Kenya",
-        authors: ["Dr. John Kiprotich", "Prof. Grace Wanjiku", "Dr. Samuel Muli"],
-        journal: "East African Medical Journal",
-        year: 2023,
-        summary: "A comprehensive study examining the effectiveness of community health worker-delivered TB treatment in rural Kenyan communities, showing improved completion rates.",
-        keyFindings: [
-          "95% treatment completion rate vs 78% in facility-based care",
-          "Community workers reduced travel burden by 70%",
-          "Cost-effectiveness improved by 40% in rural areas"
-        ],
-        relevanceScore: 0.91,
-        doi: "10.1000/eamj.2023.067"
-      },
-      {
-        id: "diabetes-south-africa-2023",
-        title: "Type 2 Diabetes Management in South African Township Communities",
-        authors: ["Dr. Nomsa Mbeki", "Prof. Ahmed Hassan", "Dr. Thabo Molefe"],
-        journal: "South African Medical Journal",
-        year: 2023,
-        summary: "Research on culturally adapted diabetes management programs in South African townships, incorporating traditional foods and community support systems.",
-        keyFindings: [
-          "HbA1c levels improved by 1.8% with cultural adaptation",
-          "Traditional foods integration increased adherence by 65%",
-          "Community support reduced hospitalization by 50%"
-        ],
-        relevanceScore: 0.89,
-        doi: "10.1000/samj.2023.128"
-      }
-    ];
+  private static getMockResearchResult(query: string): ResearchResult {
+    // Mock comprehensive response for demonstration
+    return {
+      query: query,
+      explanation: `Based on African research, ${query.toLowerCase()} represents a significant health concern across the continent, with unique epidemiological patterns and treatment approaches that differ from those observed in other regions. Studies conducted by African researchers have identified several key factors that influence disease progression and treatment outcomes in African populations.
+
+Research from institutions across Africa, including the University of Cape Town, Makerere University, and the University of Ibadan, has demonstrated that traditional African medicine plays an important complementary role in healthcare delivery. These studies have documented the efficacy of indigenous plant-based treatments and their integration with conventional medical approaches, showing promising results in community-based healthcare settings.
+
+Current treatment protocols developed specifically for African populations take into account genetic variations, nutritional factors, and socioeconomic conditions that are prevalent across the continent. Large-scale epidemiological studies have provided evidence for culturally adapted intervention strategies that have shown superior outcomes compared to standard international protocols when implemented in African healthcare systems.`,
+      articles: [
+        {
+          id: "african-research-2024-1",
+          title: `${query} Management in Sub-Saharan Africa: A Comprehensive Review`,
+          authors: ["Dr. Amina Kone", "Prof. Kwame Asante", "Dr. Fatou Diallo"],
+          journal: "African Journal of Medicine",
+          year: 2024,
+          summary: `Comprehensive review of ${query.toLowerCase()} management strategies across Sub-Saharan Africa, examining both traditional and modern approaches.`,
+          keyFindings: [
+            "Traditional medicine integration improved patient adherence by 40%",
+            "Community health worker programs reduced mortality by 25%",
+            "Genetic variations in African populations affect treatment response"
+          ],
+          relevanceScore: 0.96,
+          doi: "10.1000/ajm.2024.001234"
+        },
+        {
+          id: "african-research-2023-2",
+          title: `Epidemiological Patterns of ${query} in West African Populations`,
+          authors: ["Prof. Adaora Okafor", "Dr. Ibrahim Hassan", "Dr. Grace Mensah"],
+          journal: "West African Medical Journal",
+          year: 2023,
+          summary: `Large-scale epidemiological study examining ${query.toLowerCase()} patterns across West African countries.`,
+          keyFindings: [
+            "Higher prevalence in urban areas due to lifestyle changes",
+            "Traditional dietary patterns provide protective factors",
+            "Early intervention programs show 60% success rate"
+          ],
+          relevanceScore: 0.94,
+          doi: "10.1000/wamj.2023.067890"
+        },
+        {
+          id: "african-research-2023-3",
+          title: `Traditional African Medicine Approaches to ${query} Treatment`,
+          authors: ["Dr. Nomsa Mbeki", "Prof. Kofi Antwi", "Dr. Aisha Mwangi"],
+          journal: "Journal of African Traditional Medicine",
+          year: 2023,
+          summary: `Research on traditional medicinal plants and practices used in treating ${query.toLowerCase()} across different African cultures.`,
+          keyFindings: [
+            "15 plant species showed significant therapeutic activity",
+            "Traditional healers' protocols aligned with modern understanding",
+            "Community acceptance of integrated treatment increased to 85%"
+          ],
+          relevanceScore: 0.91,
+          doi: "10.1000/jatm.2023.445566"
+        }
+      ],
+      followUpQuestions: [
+        `What are the common complications associated with ${query.toLowerCase()} management in African healthcare settings?`,
+        `Which patient demographics are most affected by ${query.toLowerCase()} in Africa?`,
+        `What are the potential side effects of traditional African treatments for ${query.toLowerCase()}?`,
+        `How does ${query.toLowerCase()} prevention differ between urban and rural African communities?`
+      ]
+    };
+  }
+
+  static async searchArticles(query: string): Promise<Article[]> {
+    const result = await this.searchResearch(query);
+    return result.articles;
   }
 }
