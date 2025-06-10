@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,8 +24,8 @@ export const SearchBar = ({ onSearch, isLoading, isLanding = false }: SearchBarP
       <form onSubmit={handleSubmit} className="relative">
         <div className="relative">
           <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-            <div className="w-6 h-6 border-2 border-orange-500 rounded-full flex items-center justify-center">
-              <Search className="w-3 h-3 text-orange-500" />
+            <div className="w-6 h-6 border-2 border-green-600 rounded-full flex items-center justify-center">
+              <Search className="w-3 h-3 text-green-600" />
             </div>
           </div>
           <Input
@@ -34,14 +33,14 @@ export const SearchBar = ({ onSearch, isLoading, isLanding = false }: SearchBarP
             placeholder="Ask a medical question..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="h-16 pl-16 pr-16 text-lg rounded-full border-2 border-orange-200 focus:border-orange-500 focus-visible:ring-orange-500"
+            className="h-16 pl-16 pr-16 text-lg rounded-full border-2 border-green-200 focus:border-green-600 focus-visible:ring-green-600"
             disabled={isLoading}
           />
           <Button 
             type="submit" 
             disabled={isLoading || !query.trim()}
             size="icon"
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-12 w-12 rounded-full bg-orange-500 hover:bg-orange-600"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-12 w-12 rounded-full bg-green-600 hover:bg-green-700"
           >
             <ArrowRight className="w-5 h-5" />
           </Button>
@@ -66,7 +65,7 @@ export const SearchBar = ({ onSearch, isLoading, isLanding = false }: SearchBarP
       <Button 
         type="submit" 
         disabled={isLoading || !query.trim()}
-        className="bg-orange-500 hover:bg-orange-600"
+        className="bg-green-600 hover:bg-green-700"
       >
         {isLoading ? "Searching..." : "Search"}
       </Button>

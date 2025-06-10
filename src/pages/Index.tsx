@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { SearchBar } from "@/components/SearchBar";
 import { ResearchResponse } from "@/components/ResearchResponse";
@@ -115,7 +114,7 @@ const Index = () => {
             <div className="mb-12">
               <h1 className="text-5xl md:text-6xl font-normal text-foreground tracking-tight">
                 AfroEvidence
-                <span className="inline-block w-3 h-3 bg-green-500 rounded-full ml-2 mb-2"></span>
+                <span className="inline-block w-3 h-3 bg-green-600 rounded-full ml-2 mb-2"></span>
               </h1>
             </div>
 
@@ -172,7 +171,7 @@ const Index = () => {
               <div className="flex items-center gap-4">
                 <h1 className="text-2xl font-semibold text-foreground">
                   AfroEvidence
-                  <span className="inline-block w-2 h-2 bg-green-500 rounded-full ml-1 mb-1"></span>
+                  <span className="inline-block w-2 h-2 bg-green-600 rounded-full ml-1 mb-1"></span>
                 </h1>
                 <div className="flex-1 max-w-2xl">
                   <SearchBar onSearch={handleSearch} isLoading={isLoading} isLanding={false} />
