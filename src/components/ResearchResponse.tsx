@@ -170,7 +170,7 @@ export const ResearchResponse = ({ result, onFollowUpQuestion }: ResearchRespons
               {showFollowUp ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </Button>
 
-            {(showFollowUp || true) && (
+            {showFollowUp && (
               <div className="space-y-3">
                 {result.followUpQuestions.map((question: string, index: number) => (
                   <Button
@@ -179,8 +179,7 @@ export const ResearchResponse = ({ result, onFollowUpQuestion }: ResearchRespons
                     className="w-full justify-between text-left h-auto p-3 hover:bg-muted"
                     onClick={() => onFollowUpQuestion(question)}
                   >
-                    <span>{question}</span>
-                    <span className="text-green-600">→</span>
+                    {question}
                   </Button>
                 ))}
               </div>
