@@ -2,8 +2,24 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp, ExternalLink, ThumbsUp, ThumbsDown, ArrowUp } from "lucide-react";
-import { ResearchResult } from "@/pages/Index";
 import { useState } from "react";
+
+// Fix: Import types from local types or define them here, not from pages
+interface Article {
+  id: string;
+  title: string;
+  authors: string[];
+  journal: string;
+  year: string | number;
+  doi?: string;
+}
+
+interface ResearchResult {
+  query: string;
+  explanation: string;
+  articles: Article[];
+  followUpQuestions: string[];
+}
 
 interface ResearchResponseProps {
   result: ResearchResult;
@@ -78,7 +94,7 @@ export const ResearchResponse = ({ result, onFollowUpQuestion }: ResearchRespons
 
           {showReferences && (
             <div className="mt-6 space-y-6">
-              {result.articles.map((article, index) => (
+              {result.articles.map((article: Article, index: number) => (
                 <div key={article.id} className="border-l-2 border-muted pl-4">
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
@@ -156,7 +172,7 @@ export const ResearchResponse = ({ result, onFollowUpQuestion }: ResearchRespons
 
             {(showFollowUp || true) && (
               <div className="space-y-3">
-                {result.followUpQuestions.map((question, index) => (
+                {result.followUpQuestions.map((question: string, index: number) => (
                   <Button
                     key={index}
                     variant="ghost"

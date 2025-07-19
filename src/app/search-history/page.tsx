@@ -1,6 +1,6 @@
-
+"use client";
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { SearchHistoryService, SearchHistoryItem } from '@/services/SearchHistoryService';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,7 +27,7 @@ const SearchHistory = () => {
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('en-US', {
+    return new Date(date).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -41,7 +41,7 @@ const SearchHistory = () => {
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Link to="/">
+            <Link href="/">
               <Button variant="outline" size="sm">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Back to Home
@@ -60,7 +60,6 @@ const SearchHistory = () => {
             </Button>
           )}
         </div>
-
         {history.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
@@ -69,7 +68,7 @@ const SearchHistory = () => {
               <p className="text-muted-foreground mb-4">
                 Start searching for African research to build your history
               </p>
-              <Link to="/">
+              <Link href="/">
                 <Button className="bg-green-600 hover:bg-green-700">
                   Start Searching
                 </Button>
@@ -107,7 +106,7 @@ const SearchHistory = () => {
                     <span className="text-sm text-muted-foreground">
                       {item.result.articles.length} articles found
                     </span>
-                    <Link to={`/?q=${encodeURIComponent(item.query)}`}>
+                    <Link href={`/?q=${encodeURIComponent(item.query)}`}>
                       <Button size="sm" variant="outline">
                         View Results
                       </Button>
